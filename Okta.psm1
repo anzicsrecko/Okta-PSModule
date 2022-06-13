@@ -1741,6 +1741,40 @@ function oktaGetAppGroups()
     return $request
 }
 
+function oktaConvertIndividualUsersbyAppId()
+{
+    param
+    (
+        [parameter(Mandatory=$false)][ValidateLength(1,100)][String]$oOrg=$oktaDefOrg,
+        [parameter(Mandatory=$true)][ValidateLength(20,20)][String]$aid
+    )
+    [string]$method = "Post"
+    [string]$resource = "/api/v1/appAssignments/instance/" + $aid + "/async/convertAll"
+    try
+    {
+        $request = _oktaNewCall -method $method -resource $resource -oOrg $oOrg
+    }
+    catch
+    {
+        if ($oktaVerbose -eq $true)
+        {
+            Write-Host -ForegroundColor red -BackgroundColor white $_.TargetObject
+        }
+        throw $_
+    }
+    
+    <#foreach ($appUser in $request)
+    {
+        if ($skinny)
+        {
+            $appUser = OktaAppUserfromJson -appUser $appUser -skinny
+        } else {
+            $appUser = OktaAppUserfromJson -appUser $appUser
+        }
+    }#>
+    return $request
+}
+
 function oktaListUsers()
 {
     param
