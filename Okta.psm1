@@ -1762,16 +1762,31 @@ function oktaConvertIndividualUsersbyAppId()
         }
         throw $_
     }
-    
-    <#foreach ($appUser in $request)
+    return $request
+}
+
+function oktaAppLoginsByUserId()
+{
+    param
+    (
+        [parameter(Mandatory=$false)][ValidateLength(1,100)][String]$oOrg=$oktaDefOrg,
+        [parameter(Mandatory=$true)][ValidateLength(20,20)][String]$aid,
+        [parameter(Mandatory=$true)][ValidateLength(20,20)][String]$uid
+    )
+    [string]$method = "Get"
+    [string]$resource = '/api/v1/logs?filter=eventType eq "user.authentication.sso" and outcome.result eq "SUCCESS" and actor.id eq "' + $uid + '" and target.id eq "' + $aid + '"'
+    try
     {
-        if ($skinny)
+        $request = _oktaNewCall -method $method -resource $resource -oOrg $oOrg
+    }
+    catch
+    {
+        if ($oktaVerbose -eq $true)
         {
-            $appUser = OktaAppUserfromJson -appUser $appUser -skinny
-        } else {
-            $appUser = OktaAppUserfromJson -appUser $appUser
+            Write-Host -ForegroundColor red -BackgroundColor white $_.TargetObject
         }
-    }#>
+        throw $_
+    }
     return $request
 }
 
