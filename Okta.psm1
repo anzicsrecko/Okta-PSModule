@@ -831,6 +831,62 @@ function oktaNewUser()
     }
     return $request
 }
+function oktaRenameGroup()
+{
+    param
+    (
+        [parameter(Mandatory=$false)][ValidateLength(1,100)][String]$oOrg=$oktaDefOrg,
+        [parameter(Mandatory=$true)][alias("groupId")][ValidateLength(20,20)][String]$gid,
+        [parameter(Mandatory=$true)][string]$name,
+        [parameter(Mandatory=$false)][string]$description
+        #[string]$email,
+        #[string]$firstName,
+        #[string]$lastName,
+        #[string]$r_question="What Was your password?",
+        #[string]$r_answer=(oktaNewPassword),
+        #[array]$groupIds,
+        #[object]$additional=@{}
+    )
+    $psobj = @{
+                profile = @{
+                    name = $name    
+                    description = $description
+                    #email = $email
+                    #login = $login
+                }
+                #credentials = @{
+                #    password = @{ value = $password }
+                #    recovery_question = @{ question = $r_question;answer = $r_answer.ToLower().Replace(" ","")}
+                #}
+              }
+    #foreach ($attrib in $additional.keys)
+    #{
+    #    $psobj.profile.add($attrib, $additional.$attrib)
+    #}
+    #if ($groupIds)
+    #{
+    #    $psobj.add("groupIds", $groupIds)
+    #}
+    [string]$method = "Put"
+    [string]$resource = '/api/v1/groups/' + $gid
+    try
+    {
+        $request = _oktaNewCall -oOrg $oOrg -method $method -resource $resource -body $psobj
+    }
+    catch
+    {
+        if ($oktaVerbose -eq $true)
+        {
+            Write-Host -ForegroundColor red -BackgroundColor white $_.TargetObject
+        }
+        throw $_
+    }
+    #foreach ($user in $request)
+    #{
+    #    $user = OktaUserfromJson -user $user
+    #}
+    return $request
+}
 
 function oktaNewUser2()
 {
